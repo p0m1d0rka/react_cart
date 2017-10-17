@@ -70,11 +70,13 @@ class App extends Component {
   }
 
   count_total = () => {
-    this.state.itemsInCart.map((el)=>{
-      return(el.amount * el.price);
-    }).reduce((val1, val2)=>{
-      return(val1 + val2);
-    }, 0)
+    return (
+      this.state.itemsInCart.map((el)=>{
+        return(el.amount * el.price);
+      }).reduce((val1, val2)=>{
+        return(val1 + val2);
+      }, 0)
+    )
   }
 
   render() {
@@ -85,7 +87,7 @@ class App extends Component {
         </Row>
         <Cart itemsInCart={this.state.itemsInCart} incItem={this.incInCart} decItem={this.decInCart}/>
         <Row>
-          { this.count_total() }
+          <span>Total:</span> { this.count_total() }
         </Row>
         <Row>
           <Button bsStyle='success' onClick={ this.sendOrder }>Оформить</Button>
