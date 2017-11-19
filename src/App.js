@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-// import logo from './logo.svg';
-import './App.css';
+import { connect } from 'react-redux';
 import {Grid, Row, Button} from 'react-bootstrap';
-import GroupButton from './components/GroupButton/GroupButton'
+import './App.css';
+import Item from './components/Item/Item'
 import Cart from './components/Cart/Cart'
 import data from './components/data/items'
 
 class App extends Component {
   constructor(){
     super();
-    // this.state.itemsInCart = [];
     this.state = {itemsInCart: []};
   }
   
@@ -83,7 +82,14 @@ class App extends Component {
     return (
       <Grid fluid={true}>
         <Row>
-          <GroupButton data={data} onClick={this.addToCart}/>
+          { this
+            .props
+            .items
+            .map((value, index, iterator) => {
+              return(<Item data_value={value} key={`item-${value.id}`} />)
+            }
+          ) }
+          {/* <Item data={data} onClick={this.addToCart}/> */}
         </Row>
         <Cart itemsInCart={this.state.itemsInCart} incItem={this.incInCart} decItem={this.decInCart}/>
         <Row>
@@ -97,4 +103,14 @@ class App extends Component {
   }
 }
  
-export default App;
+// export default App;
+export default connect((state) => {
+  return {
+    items: state.items
+  };
+},
+(dispatch) => {
+  return {
+  };
+})(App);
+
