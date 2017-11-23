@@ -8,34 +8,33 @@ class Cart extends Component {
   }
   render(){
     return(
-      this.props.itemsInCart.map((el)=>{
-        return(
-          <Row key={el.id}>
-            <Col md={3}>
-              <span>
-                { el.name }
-              </span>
-            </Col>
-            <Col md={3}>
-              <span>
-                { el.price }
-              </span>
-            </Col>
-            <Col md={3}>
-              <Button bsStyle='info' onClick={e => this.props.incItem(e, el.id) }>+</Button>
-              <span>
-                { el.amount }
-              </span>
-              <Button bsStyle='info' onClick={e => this.props.decItem(e, el.id) }>-</Button>
-            </Col>
-            <Col md={3}>
-              <span>
-                { el.price * el.amount }
-              </span>
-            </Col>
-         </Row>
-        )
-      })
+      <Row key={this.props.item.id}>
+        <Col md={3}>
+          <span>
+            { this.props.item.name }
+          </span>
+        </Col>
+        <Col md={3}>
+          <span>
+            { this.props.item.price }
+          </span>
+        </Col>
+        <Col md={3}>
+          <Button bsStyle='info' onClick={this.props.clickAdd}>+</Button>
+          
+          <span>
+            { this.props.amount }
+          </span>
+          <Button bsStyle='info' onClick={this.props.clickDec}>-</Button>
+          
+        </Col>
+        <Col md={3}>
+          <span>
+            { this.props.item.price * this.props.amount }
+          </span>
+        </Col>
+      </Row>
+    
     )
   }
 }

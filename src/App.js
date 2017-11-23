@@ -4,79 +4,47 @@ import {Grid, Row, Button} from 'react-bootstrap';
 import './App.css';
 import Item from './components/Item/Item'
 import Cart from './components/Cart/Cart'
-import data from './components/data/items'
+import { to_cart } from './actions/carts.actions'
 
 class App extends Component {
   constructor(){
     super();
     this.state = {itemsInCart: []};
   }
-  
-  incInCart = (e, id) => {
-    for(let i in this.state.itemsInCart){
-      if (this.state.itemsInCart[i].id === id){
-        this.state.itemsInCart[i].amount ++
 
-        this.setState({
-          itemsInCart: this.state.itemsInCart
-        })
-        return true;
-      }
-    }
-    return false;
-  }
-
-  addToCart = (e, id) => {
-
-    if(this.incInCart(e, id)){
-      return true;
-    }
-
-    for(let i in data){
-      if (data[i].id === id){
-        this.state.itemsInCart.push(data[i])
-        
-            this.setState({
-              itemsInCart: this.state.itemsInCart
-            });
-      }
-    }
-  }
-
-  decInCart = (e, id) => {
-    for(let i in this.state.itemsInCart){
-      if (this.state.itemsInCart[i].id === id){
-        this.state.itemsInCart[i].amount --
-
-        if (this.state.itemsInCart[i].amount < 1){
-          this.state.itemsInCart.splice(i,1)
-        }
-        this.setState({
-          itemsInCart: this.state.itemsInCart
-        })
-        return true;
-      }
-    }
+  get_item_by_id = (id) =>
+  {
+    return this.props.items.filter(x => {
+      return x.id === id;
+    }).first()
   }
 
   sendOrder = () => {
     let order = {
       user_id: 123,
-      order: this.state.itemsInCart,
+      order: this.props.cart,
       total: this.count_total()
     }
     console.log(JSON.stringify(order))
   }
 
   count_total = () => {
-    return (
-      this.state.itemsInCart.map((el)=>{
-        return(el.amount * el.price);
-      }).reduce((val1, val2)=>{
-        return(val1 + val2);
-      }, 0)
+    let total = 0;
+    this.props.cart.forEach( el =>{
+      total += this.get_item_by_id(el.id).price * el.amount
+    }
+    )
+    return ( 
+      total
     )
   }
+
+
+
+	addToCart = (e, item_id, amount) => {
+   this.props.to_cart(item_id, amount);
+  };
+
 
   render() {
     return (
@@ -86,12 +54,19 @@ class App extends Component {
             .props
             .items
             .map((value, index, iterator) => {
-              return(<Item data_value={value} key={`item-${value.id}`} />)
+              return(<Item data_value={value} key={`item-${value.id}`} click={e => this.addToCart(e, value.id, 1)}/>)
             }
           ) }
-          {/* <Item data={data} onClick={this.addToCart}/> */}
         </Row>
-        <Cart itemsInCart={this.state.itemsInCart} incItem={this.incInCart} decItem={this.decInCart}/>
+        { this
+          .props
+          .cart
+          .map((value, index, iterator) => {
+            const item = this.get_item_by_id(value.id);
+            
+            return(<Cart item={item} amount={value.amount} key={`cart-for-${item.id}`} clickAdd={e => this.addToCart(e, item.id, 1 )} clickDec={e => this.addToCart(e, item.id, -1 )}/>)
+            }
+          ) }
         <Row>
           <span>Total:</span> { this.count_total() }
         </Row>
@@ -103,14 +78,17 @@ class App extends Component {
   }
 }
  
-// export default App;
 export default connect((state) => {
   return {
-    items: state.items
+    items: state.items,
+    cart: state.cart,
   };
 },
 (dispatch) => {
   return {
+    to_cart: (item_id, amount) => {
+      dispatch(to_cart(item_id, amount));
+    },
   };
 })(App);
 
